@@ -55,7 +55,7 @@ cst_val *int_val(int i)
     CST_VAL_INT(v) = i;
     return v;
 }
-    
+
 cst_val *float_val(float f)
 {
     cst_val *v = new_val();
@@ -76,9 +76,9 @@ cst_val *string_val(const char *s)
 cst_val *cons_val(const cst_val *a, const cst_val *b)
 {
     cst_val *v = new_val();
-    CST_VAL_CAR(v)=((!a || cst_val_consp(a)) ? 
+    CST_VAL_CAR(v)=((!a || cst_val_consp(a)) ?
 		    (cst_val *)(void *)a:val_inc_refcount(a));
-    CST_VAL_CDR(v)=((!b || cst_val_consp(b)) ? 
+    CST_VAL_CDR(v)=((!b || cst_val_consp(b)) ?
 		    (cst_val *)(void *)b:val_inc_refcount(b));
     return v;
 }
@@ -231,7 +231,7 @@ void *val_void(const cst_val *v)
 	cst_error();
 	return NULL;
     }
-    else 
+    else
 	return CST_VAL_VOID(v);
 }
 
@@ -266,7 +266,7 @@ int cst_val_consp(const cst_val *v)
 const cst_val *set_cdr(cst_val *v1, const cst_val *v2)
 {
     /* destructive set cdr, be careful you have a pointer to current cdr */
-    
+
     if (!cst_val_consp(v1))
     {
 	cst_errmsg("VAL: tried to set cdr of non-consp cell\n");
@@ -288,7 +288,7 @@ const cst_val *set_cdr(cst_val *v1, const cst_val *v2)
 const cst_val *set_car(cst_val *v1, const cst_val *v2)
 {
     /* destructive set car, be careful you have a pointer to current car */
-    
+
     if (!cst_val_consp(v1))
     {
 	cst_errmsg("VAL: tried to set car of non-consp cell\n");
@@ -326,7 +326,7 @@ void val_print(cst_file fd,const cst_val *v)
 	    if (p)
 		cst_fprintf(fd," ");
             if (p && !cst_val_consp(p))  /* dotted pairs for non-list */
-            {                            
+            {
                 cst_fprintf(fd,". ");
                 val_print(fd,p);
                 break;
@@ -334,7 +334,7 @@ void val_print(cst_file fd,const cst_val *v)
 	}
 	cst_fprintf(fd,")");
     }
-    else 
+    else
 	cst_fprintf(fd,"[Val %s 0x%p]",
 		cst_val_defs[CST_VAL_TYPE(v)/2].name,CST_VAL_VOID(v));
 }
@@ -393,7 +393,7 @@ int val_equal(const cst_val *v1, const cst_val *v2)
 	    return (val_float(v1) == val_float(v2));
 	else if (CST_VAL_TYPE(v1) == CST_VAL_TYPE_STRING)
 	    return (cst_streq(CST_VAL_STRING(v1),CST_VAL_STRING(v2)));
-	else 
+	else
 	    return CST_VAL_VOID(v1) == CST_VAL_VOID(v2);
     }
     else
@@ -442,7 +442,7 @@ cst_val *val_inc_refcount(const cst_val *b)
     /* where breaking const is reasonable                              */
     wb = (cst_val *)(void *)b;
 
-    if (CST_VAL_REFCOUNT(wb) == -1) 
+    if (CST_VAL_REFCOUNT(wb) == -1)
 	/* or is a cons cell in the text segment, how do I do that ? */
 	return wb;
     else if (!cst_val_consp(wb)) /* we don't ref count cons cells */
@@ -456,7 +456,7 @@ int val_dec_refcount(const cst_val *b)
 
     wb = (cst_val *)(void *)b;
 
-    if (CST_VAL_REFCOUNT(wb) == -1) 
+    if (CST_VAL_REFCOUNT(wb) == -1)
 	/* or is a cons cell in the text segment, how do I do that ? */
 	return -1;
     else if (cst_val_consp(wb)) /* we don't ref count cons cells */
@@ -475,11 +475,7 @@ int val_dec_refcount(const cst_val *b)
     }
 }
 
-#ifdef _WIN32
-__inline int utf8_sequence_length(char c0)
-#else
 int utf8_sequence_length(char c0)
-#endif
 {
     /* Get the expected length of UTF8 sequence given its most */
     /* significant byte */
@@ -490,7 +486,7 @@ cst_val *cst_utf8_explode(const cst_string *utf8string)
 {
     /* Return a list of utf8 characters as strings */
     cst_val *chars=NULL;
-  
+
     const unsigned char *str = (const unsigned char*)utf8string;
     char utf8char[5];
     char c0;
@@ -506,7 +502,7 @@ cst_val *cst_utf8_explode(const cst_string *utf8string)
     return val_reverse(chars);
 }
 
-static int utf8_ord(const char *utf8_seq) 
+static int utf8_ord(const char *utf8_seq)
 {
     unsigned int len;
     int ord;
@@ -570,7 +566,7 @@ int cst_utf8_ord_string(const char *utf8_char)
     return utf8_ord(utf8_char);
 }
 
-static int utf8_chr(int ord, char* utf8char) 
+static int utf8_chr(int ord, char* utf8char)
 {
     unsigned int utf8len;
     int i = 0;
@@ -708,6 +704,3 @@ cst_val *val_readlist_string(const char *str)
 
     return val_reverse(v);
 }
-
-
-

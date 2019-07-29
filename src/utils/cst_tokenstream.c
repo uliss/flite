@@ -53,7 +53,7 @@ static void set_charclass_table(cst_tokenstream *ts)
 {
     int i;
     memset(ts->charclass,0,256);  /* zero everything */
-    
+
     for (i=0; ts->p_whitespacesymbols[i]; i++)
 	ts->charclass[(unsigned char)ts->p_whitespacesymbols[i]] |= TS_CHARCLASS_WHITESPACE;
     for (i=0; ts->p_singlecharsymbols[i]; i++)
@@ -71,11 +71,11 @@ void set_charclasses(cst_tokenstream *ts,
 		     const cst_string *prepunctuation,
 		     const cst_string *postpunctuation)
 {
-    ts->p_whitespacesymbols = 
+    ts->p_whitespacesymbols =
 	(whitespace ? whitespace : cst_ts_default_whitespacesymbols);
-    ts->p_singlecharsymbols = 
+    ts->p_singlecharsymbols =
     (singlecharsymbols ? singlecharsymbols : cst_ts_default_singlecharsymbols);
-    ts->p_prepunctuationsymbols = 
+    ts->p_prepunctuationsymbols =
     (prepunctuation ? prepunctuation : cst_ts_default_prepunctuationsymbols);
     ts->p_postpunctuationsymbols =
    (postpunctuation ? postpunctuation : cst_ts_default_postpunctuationsymbols);
@@ -95,7 +95,7 @@ static void extend_buffer(cst_string **buffer,int *buffer_max)
     cst_free(*buffer);
     *buffer = new_buffer;
     *buffer_max = new_max;
-}			  
+}
 
 static cst_tokenstream *new_tokenstream(const cst_string *whitespace,
 					const cst_string *singlechars,
@@ -266,11 +266,7 @@ static void get_token_sub_part(cst_tokenstream *ts,
     (*buffer)[p] = '\0';
 }
 
- #ifdef _WIN32
- __inline int ts_utf8_sequence_length(char c0)
- #else
  int ts_utf8_sequence_length(char c0)
- #endif
  {
     /* Get the expected length of UTF8 sequence given its most */
     /* significant byte */
@@ -298,7 +294,7 @@ static void get_token_sub_part_2(cst_tokenstream *ts,
         /* If someone sets tags we end the token */
         /* This can't happen in standard tokenstreams, but can in user */
         /* defined ones */
-        if (ts->tags) break;  
+        if (ts->tags) break;
 
         /* In the special utf8 char by char mode we end at end of a utf8 char */
         if ((ts->utf8_explode_mode) &&
@@ -316,14 +312,14 @@ static void get_token_postpunctuation(cst_tokenstream *ts)
 
     t = cst_strlen(ts->token);
     for (p=t;
-	 (p > 0) && 
+	 (p > 0) &&
 	     ((ts->token[p] == '\0') ||
 	      (ts_charclass(ts->token[p],TS_CHARCLASS_POSTPUNCT,ts)));
 	 p--);
 
     if (t != p)
     {
-	if (t-p >= ts->postp_max) 
+	if (t-p >= ts->postp_max)
 	    extend_buffer(&ts->postpunctuation,&ts->postp_max);
 	/* Copy postpunctuation from token */
 	memmove(ts->postpunctuation,&ts->token[p+1],(t-p));
@@ -433,7 +429,7 @@ static cst_string internal_ts_getc(cst_tokenstream *ts)
 	else
 	    ts->current_char = ts->string_buffer[ts->file_pos];
     }
-    
+
     if (!ts_eof(ts))
 	ts->file_pos++;
     if (ts->current_char == '\n')
@@ -466,14 +462,14 @@ const cst_string *ts_get_quoted_token(cst_tokenstream *ts,
                    (ts->current_char != quote));
              p++)
         {
-            if (p >= ts->token_max) 
+            if (p >= ts->token_max)
                 extend_buffer(&ts->token,&ts->token_max);
             ts->token[p] = ts->current_char;
             ts_getc(ts);
             if (ts->current_char == escape)
             {
                 ts_get(ts);
-                if (p >= ts->token_max) 
+                if (p >= ts->token_max)
                     extend_buffer(&ts->token,&ts->token_max);
                 ts->token[p] = ts->current_char;
                 ts_get(ts);
@@ -528,7 +524,7 @@ const cst_string *ts_get(cst_tokenstream *ts)
 
     /* quoted strings currently ignored */
     ts->token_pos = ts->file_pos - 1;
-	
+
     /* Get prepunctuation */
     if (!ts_eof(ts) &&
         ts_charclass(ts->current_char,TS_CHARCLASS_PREPUNCT,ts))
